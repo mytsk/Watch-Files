@@ -11,8 +11,8 @@
 	File Filter, Mandatory, You can define multiple files in order no default value. You
   .PARAMETER Last, default value is 5 rows.
 	Rows from each file to be displayed
-  .PARAMETER Top, default value is 5 rows.
-	Limits how many files you want to look at. 
+  .PARAMETER FileCount, default value is 5 rows.
+	Limit the number of files to parse (last modified). 
   .PARAMETER KeepScreenBuffer, switch
 	If defined, instead of clearing screen buffer it will continue with next itteration (without clearing).
   .EXAMPLE  
@@ -34,13 +34,13 @@ function Watch-Files {
     [parameter(position = 0, Mandatory = $true)]$Filter,
     [parameter(position = 1, Mandatory = $false)][int]$Interval,
     [parameter(position = 2, Mandatory = $false)][int]$Last,
-    [parameter(position = 3, Mandatory = $false)][int]$Top,
+    [parameter(position = 3, Mandatory = $false)][int]$FileCount,
     [parameter(position = 4, Mandatory = $false)][switch]$KeepScreenBuffer
   )
 
   if (!$Interval) { $Interval = 2 }
   if (!$Last) { $Last = 5 }
-  if (!$Top) { $Top = 10 }
+  if (!$FileCount) { $FileCount = 10 }
 	
   while (1) {
     if (!$KeepScreenBuffer) { clear-host }
@@ -50,7 +50,7 @@ function Watch-Files {
     Write-Host -ForegroundColor White "$interval" -nonewline 
     Write-Host -ForegroundColor Gray " second." 
     Write-Host -ForegroundColor DarkCyan "-------------------------------------------------------------------------------"
-    $files = Get-ChildItem -File $filter  | Sort-Object -Property LastWriteTime, Name | Select-Object -last $Top
+    $files = Get-ChildItem -File $filter  | Sort-Object -Property LastWriteTime, Name | Select-Object -last $FileCount
 
     foreach ($data in $files) {
       write-host -ForegroundColor DarkCyan "File: " -NoNewline
