@@ -42,7 +42,7 @@ function Watch-Files {
   if (!$Last) { $Last = 5 }
   if (!$FileCount) { $FileCount = 10 }
 	
-  while (1) {
+  while ($true) {
     if (!$KeepScreenBuffer) { clear-host }
     Write-Host -ForegroundColor Gray "Reading from files " -nonewline       
     Write-Host -ForegroundColor White "$filter" -nonewline     
