@@ -32,13 +32,27 @@
 function Watch-Files {  
   Param(
     [parameter(position = 0, Mandatory = $true)]$Filter,
-    [parameter(position = 1, Mandatory = $false)][int]$Interval,
+    [parameter(position = 1, Mandatory = $false)][double]$Milliseconds,
+    [parameter(position = 1, Mandatory = $false)][double]$Seconds,
     [parameter(position = 2, Mandatory = $false)][int]$Last,
     [parameter(position = 3, Mandatory = $false)][int]$FileCount,
     [parameter(position = 4, Mandatory = $false)][switch]$KeepScreenBuffer
   )
+  
+  if ($Milliseconds) {
+    $type = "milliseconds"
+    $interval = $Milliseconds
+  }
+  elseif ($Seconds) {
+    $type = "seconds"
+    $interval = $Seconds
+  }
+  elseif ($Seconds -eq $null -and $Milliseconds -eq $null) {
+    $interval = 2
+    $type = "seconds"
+  }
 
-  if (!$Interval) { $Interval = 2 }
+  
   if (!$Last) { $Last = 5 }
   if (!$FileCount) { $FileCount = 10 }
 	
@@ -48,7 +62,7 @@ function Watch-Files {
     Write-Host -ForegroundColor White "$filter" -nonewline     
     Write-Host -ForegroundColor Gray " every " -nonewline 
     Write-Host -ForegroundColor White "$interval" -nonewline 
-    Write-Host -ForegroundColor Gray " second." 
+    Write-Host -ForegroundColor Gray " $type." 
     Write-Host -ForegroundColor DarkCyan "-------------------------------------------------------------------------------"
     $files = Get-ChildItem -File $filter  | Sort-Object -Property LastWriteTime, Name | Select-Object -last $FileCount
 
@@ -60,7 +74,14 @@ function Watch-Files {
     Write-Host -ForegroundColor DarkCyan "-------------------------------------------------------------------------------"
     Write-Verbose "Files read: $files"
     write-Host "(Ctrl + C to exit)"
-    Start-Sleep $interval
+    if ($type -eq "milliseconds") {
+    
+      Start-Sleep -Milliseconds $interval
+    }
+    elseif ($type -eq "seconds") {
+      Start-Sleep -Seconds $interval
+    }
+    
   }
 }
 Export-ModuleMember -Function 'Watch-Files'
